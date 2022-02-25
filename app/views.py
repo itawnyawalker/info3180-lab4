@@ -5,9 +5,12 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 import os
-from app import app
 from flask import render_template, request, redirect, url_for, flash, session, abort
 from werkzeug.utils import secure_filename
+from app import app
+
+
+from app.forms import UploadForm
 
 
 ###
@@ -28,23 +31,28 @@ def about():
 
 @app.route('/upload', methods=['POST', 'GET'])
 def upload():
+    """Render website's image upload form."""
     if not session.get('logged_in'):
         abort(401)
 
     # Instantiate your form class
-
+    pform = UploadForm()
     # Validate file upload on submit
-    if request.method == 'POST':
+    if request.method == 'POST' and pform.validate_on_submit:
         # Get file data and save to your uploads folder
+        photo = pform.photo.data
+        filename = secure_filename(photo.filename)
+        photo.save(os.path.join(app.config['UPLOAD_FOLDER'],filename))
 
         flash('File Saved', 'success')
         return redirect(url_for('home'))
-
-    return render_template('upload.html')
+    elif request.method == 'GET':
+        return render_template('upload.html', form=pform)
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
+    """Renders website's login page."""
     error = None
     if request.method == 'POST':
         if request.form['username'] != app.config['ADMIN_USERNAME'] or request.form['password'] != app.config['ADMIN_PASSWORD']:
@@ -59,6 +67,7 @@ def login():
 
 @app.route('/logout')
 def logout():
+    """Logs user out."""
     session.pop('logged_in', None)
     flash('You were logged out', 'success')
     return redirect(url_for('home'))
@@ -70,9 +79,10 @@ def logout():
 
 # Flash errors from the form if validation fails
 def flash_errors(form):
+    """Flash errors"""
     for field, errors in form.errors.items():
         for error in errors:
-            flash(u"Error in the %s field - %s" % (
+            flash("Error in the %s field - %s" % (
                 getattr(form, field).label.text,
                 error
 ), 'danger')
