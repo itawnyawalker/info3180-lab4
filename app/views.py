@@ -90,10 +90,7 @@ def get_image(filename):
 
 @app.route('/files')
 def files():
-    """Render"""
-    if not session.get('logged_in'):
-        abort(401)
-        
+    """Render"""        
     filenames = get_uploaded_images()
     return render_template('files.html', filenames=filenames)
 
