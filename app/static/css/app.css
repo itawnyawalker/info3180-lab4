@@ -3,7 +3,14 @@ body {
 }
 
 img {
-    width: 250px;
-    height: 200px;
-    margin: 20px;
+    width: 345px;
+    height: 230px;
 }
+
+.grid-container{
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding: 10px;
+    gap: 20px 20px;
+}
+
