@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block main %}
+<ul> 
+    {% for file in filenames %}
+    <li> <img src="{{ url_for('files', filename=file) }} " alt="{{ file }} "/>  </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}
